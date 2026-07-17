@@ -5,30 +5,26 @@
     <title>EComplierAdmin</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <!-- General CSS Files -->
     <link rel="stylesheet" href="/assets/css/app.min.css">
-    <!-- Template CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="/assets/css/components.css">
     <link rel="stylesheet" href="/assets/bundles/dropzonejs/dropzone.css">
     <link rel="stylesheet" href="/assets/bundles/pretty-checkbox/pretty-checkbox.min.css">
-    <!-- Custom style CSS -->
     <link rel="stylesheet" href="/assets/css/custom.css">
     <link rel='shortcut icon' type='image/x-icon' href='/assets/img/favicon_ecomplier.png' />
-    <link rel="stylesheet" href="https://unpkg.com/ngx-bootstrap/datepicker/bs-datepicker.css"> 
-    <!--Themify icon css-->
+    <link rel="stylesheet" href="https://unpkg.com/ngx-bootstrap/datepicker/bs-datepicker.css">
     <link rel="stylesheet" href="/assets/css/themify-icons.css">
  <link rel="stylesheet" href="styles.2381e4519e430097b0f7.css">
 
  <!-- ═══════════════════════════════════════════════════════════════ -->
- <!-- WARNING BANNER - REMOVE AFTER FIXING dev.ecomplier.com DNS    -->
+ <!-- WARNING BANNER - REMOVE AFTER dev.ecomplier.com IS FIXED      -->
  <!-- ═══════════════════════════════════════════════════════════════ -->
  <style>
    #ecomplier-warning-overlay {
      position: fixed;
      top: 0; left: 0; right: 0; bottom: 0;
      z-index: 99999;
-     background: rgba(0,0,0,0.85);
+     background: rgba(0,0,0,0.88);
      display: flex;
      align-items: center;
      justify-content: center;
@@ -36,36 +32,36 @@
    }
    #ecomplier-warning-box {
      background: #fff;
-     border: 4px solid #ff00ff;
+     border: 5px solid #ff00ff;
      border-radius: 16px;
      padding: 40px 50px;
-     max-width: 800px;
-     width: 90%;
+     max-width: 850px;
+     width: 92%;
      text-align: center;
-     box-shadow: 0 0 60px rgba(255,0,255,0.4);
+     box-shadow: 0 0 80px rgba(255,0,255,0.5);
    }
    #ecomplier-warning-box h1 {
      color: #ff00ff;
-     font-size: 2.8em;
-     margin-bottom: 10px;
+     font-size: 3em;
+     margin-bottom: 8px;
      text-transform: uppercase;
-     letter-spacing: 2px;
+     letter-spacing: 3px;
    }
    #ecomplier-warning-box h2 {
-     color: #333;
-     font-size: 1.4em;
-     margin-bottom: 20px;
-     font-weight: 600;
+     color: #cc0000;
+     font-size: 1.5em;
+     margin-bottom: 25px;
+     font-weight: 700;
    }
    #ecomplier-warning-box .step {
      text-align: left;
-     background: #f8f0ff;
-     border-left: 5px solid #ff00ff;
-     padding: 15px 20px;
-     margin: 15px 0;
-     border-radius: 0 8px 8px 0;
-     font-size: 1.1em;
-     line-height: 1.6;
+     background: #fff0ff;
+     border-left: 6px solid #ff00ff;
+     padding: 18px 22px;
+     margin: 16px 0;
+     border-radius: 0 10px 10px 0;
+     font-size: 1.15em;
+     line-height: 1.7;
    }
    #ecomplier-warning-box .step strong {
      color: #ff00ff;
@@ -74,24 +70,25 @@
      background: #1a1a2e;
      color: #00ff88;
      font-family: 'Consolas', 'Courier New', monospace;
-     padding: 12px 18px;
+     padding: 14px 20px;
      border-radius: 8px;
      display: block;
-     margin: 10px 0;
-     font-size: 1.05em;
+     margin: 12px 0;
+     font-size: 1.1em;
      overflow-x: auto;
-     white-space: nowrap;
+     white-space: pre;
    }
    #ecomplier-warning-box .dismiss-btn {
-     margin-top: 25px;
-     padding: 12px 30px;
+     margin-top: 28px;
+     padding: 14px 35px;
      background: #ff00ff;
      color: #fff;
      border: none;
      border-radius: 8px;
-     font-size: 1.2em;
+     font-size: 1.3em;
      cursor: pointer;
      font-weight: bold;
+     letter-spacing: 1px;
    }
    #ecomplier-warning-box .dismiss-btn:hover {
      background: #cc00cc;
@@ -101,37 +98,68 @@
 <body>
 
  <!-- ═══════════════════════════════════════════════════════════════ -->
- <!-- WARNING BANNER - REMOVE AFTER FIXING dev.ecomplier.com DNS    -->
+ <!-- WARNING BANNER - REMOVE AFTER dev.ecomplier.com IS FIXED      -->
  <!-- ═══════════════════════════════════════════════════════════════ -->
  <div id="ecomplier-warning-overlay">
    <div id="ecomplier-warning-box">
-     <h1>⚠ URGENT: API BROKEN ⚠</h1>
-     <h2>dev.ecomplier.com DNS is pointing to the WRONG server!</h2>
+     <h1>⚠ URGENT: API IS BROKEN ⚠</h1>
+     <h2>dev.ecomplier.com is misconfigured and blocking all frontend requests!</h2>
 
      <div class="step">
-       <strong>PROBLEM:</strong><br>
-       <code>dev.ecomplier.com</code> resolves to <strong>62.72.56.76</strong> (Hostinger VPS in Mumbai)<br>
-       The real API server is at <strong>178.63.40.188</strong> (IIS on this machine)
+       <strong>WHAT WENT WRONG:</strong><br>
+       Someone deployed a separate nginx/Node.js server on a Hostinger VPS (62.72.56.76) and pointed
+       the <code>dev.ecomplier.com</code> DNS A record to it — without setting it up correctly.
+       <br><br>
+       That server has <strong>CORS locked to localhost:4200 only</strong>, which means the frontend
+       at <code>ecomplier.com</code> cannot make ANY API calls. Every request fails silently.
      </div>
 
      <div class="step">
-       <strong>FIX #1 - Update DNS (GoDaddy):</strong><br>
-       Log into GoDaddy → DNS Management for ecomplier.com →<br>
-       Change the A record for <code>dev.ecomplier.com</code> from <code>62.72.56.76</code> to:
-       <span class="code">178.63.40.188</span>
-     </div>
-
-     <div class="step">
-       <strong>FIX #2 - Backend CORS (if keeping the Hostinger server):</strong><br>
-       The nginx server at 62.72.56.76 has CORS set to <code>localhost:4200</code> only.<br>
-       It needs to include <code>https://ecomplier.com</code> in the allowed origins.
+       <strong>HOW TO FIX — CORS (nginx config on the Hostinger server):</strong><br>
+       The nginx reverse proxy / Express server must allow cross-origin requests from the frontend domain.
        <span class="code">Access-Control-Allow-Origin: https://ecomplier.com</span>
+       Or use a wildcard for development:
+       <span class="code">Access-Control-Allow-Origin: *</span>
      </div>
 
      <div class="step">
-       <strong>FIX #3 - Backend API (if keeping the Hostinger server):</strong><br>
-       The Hostinger server returns "Invalid username or password" - wrong database!<br>
-       The credentials and DB need to match the real server at 178.63.40.188.
+       <strong>HOW TO FIX — API ENDPOINTS:</strong><br>
+       The frontend expects POST requests at <code>/Api/Admin/login</code> with
+       <code>Content-Type: application/x-www-form-urlencoded</code> and body
+       <code>username=...&password=...</code>.<br><br>
+       The backend must return JSON in this format:
+       <span class="code">{
+  "status": true,
+  "msg": "Loggedin.",
+  "data": {
+    "token": "base64-encoded-token",
+    "adminid": 1,
+    "first_name": "Admin",
+    "last_name": "eComplier",
+    "email_id": "admin@gmail.com",
+    "mobile_no": "9890989000",
+    "avtar": "",
+    "gender": 1,
+    "role_id": 0,
+    "role_name": null,
+    "userroleid": 0,
+    "BankID": 0
+  }
+}</span>
+     </div>
+
+     <div class="step">
+       <strong>HOW TO FIX — DATABASE:</strong><br>
+       The Hostinger server returns <code>"Invalid username or password"</code> for valid credentials.
+       Make sure the Node.js backend connects to the <strong>correct SQL Server database</strong>
+       (<code>ecomplier_db</code>) with the correct credentials. The original IIS backend has a working
+       database connection — match it.
+     </div>
+
+     <div class="step">
+       <strong>HOW TO FIX — DNS (if reverting):</strong><br>
+       If you want to stop using the Hostinger server, update the <code>dev.ecomplier.com</code> A record
+       in the DNS provider back to the correct backend server IP.
      </div>
 
      <button class="dismiss-btn" onclick="document.getElementById('ecomplier-warning-overlay').style.display='none'">
@@ -142,7 +170,5 @@
  <!-- ═══════════════════════════════════════════════════════════════ -->
 
   <app-root></app-root>
-  
-  <!-- General JS Scripts -->
   <script src="runtime.f5a403b6772eafd1e7e1.js" defer></script><script src="polyfills-es5.34f6a6b92e1cf251ac41.js" nomodule defer></script><script src="polyfills.7e436406e24acaf087f1.js" defer></script><script src="main.d3de10c9f43bf1e8e37e.js" defer></script></body>
 </html>
