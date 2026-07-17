@@ -39,7 +39,7 @@
    #api-warning .msg {
      font-size: 13px;
      opacity: 0.95;
-     max-width: 900px;
+     max-width: 950px;
      margin: 0 auto;
    }
    #api-warning .msg b { color: #ffff00; }
@@ -56,20 +56,20 @@
      font-size: 12px;
    }
    #api-warning .dismiss:hover { background: rgba(255,255,255,0.35); }
-   body { padding-top: 0 !important; }
  </style>
 </head>
 <body>
 
- <!-- WARNING BANNER - REMOVE AFTER dev.ecomplier.com IS FIXED -->
+ <!-- WARNING BANNER - REMOVE AFTER HOSTINGER TEAM FIXES THEIR SERVER -->
  <div id="api-warning">
-   <div class="title">WARNING: API IS BROKEN</div>
+   <div class="title">WARNING: API IS BROKEN — HOSTINGER TEAM: FIX YOUR SERVER</div>
    <div class="msg">
-     The backend at <b>dev.ecomplier.com</b> has <b>CORS locked to localhost:4200 only</b> and a
-     <b>wrong database</b>. Login will fail. The Hostinger team must:
-     1) Update <b>GoDaddy DNS</b> for <b>@</b> and <b>www</b> records to point to the correct backend IP.
-     2) Add <b>https://ecomplier.com</b> and <b>https://www.ecomplier.com</b> to the backend CORS allowed origins.
-     3) Fix the database connection to use the correct <b>ecomplier_db</b> SQL Server credentials.
+     The <b>frontend</b> (ecomplier.com), <b>backend API</b> (dev.ecomplier.com), and <b>database</b> (ecomplier_db)
+     must ALL run on YOUR server. Right now your server has <b>CORS locked to localhost:4200 only</b>
+     and returns <b>"Invalid username or password"</b> because it connects to the wrong database.
+     You must: 1) Deploy the backend API on your server. 2) Connect to the correct <b>ecomplier_db</b>
+     SQL Server database. 3) Add <b>https://ecomplier.com</b> and <b>https://www.ecomplier.com</b> to
+     CORS allowed origins. 4) Ensure <b>dev.ecomplier.com</b>, <b>@</b>, and <b>www</b> all resolve to your server IP.
    </div>
    <button class="dismiss" onclick="document.getElementById('api-warning').style.display='none'">Dismiss</button>
  </div>
