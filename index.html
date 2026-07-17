@@ -16,9 +16,6 @@
     <link rel="stylesheet" href="/assets/css/themify-icons.css">
  <link rel="stylesheet" href="styles.2381e4519e430097b0f7.css">
 
- <!-- ═══════════════════════════════════════════════════════════════ -->
- <!-- WARNING BANNER - REMOVE AFTER dev.ecomplier.com IS FIXED      -->
- <!-- ═══════════════════════════════════════════════════════════════ -->
  <style>
    #ecomplier-warning-overlay {
      position: fixed;
@@ -35,10 +32,12 @@
      border: 5px solid #ff00ff;
      border-radius: 16px;
      padding: 40px 50px;
-     max-width: 850px;
+     max-width: 880px;
      width: 92%;
      text-align: center;
      box-shadow: 0 0 80px rgba(255,0,255,0.5);
+     max-height: 90vh;
+     overflow-y: auto;
    }
    #ecomplier-warning-box h1 {
      color: #ff00ff;
@@ -49,7 +48,7 @@
    }
    #ecomplier-warning-box h2 {
      color: #cc0000;
-     font-size: 1.5em;
+     font-size: 1.4em;
      margin-bottom: 25px;
      font-weight: 700;
    }
@@ -60,7 +59,7 @@
      padding: 18px 22px;
      margin: 16px 0;
      border-radius: 0 10px 10px 0;
-     font-size: 1.15em;
+     font-size: 1.12em;
      line-height: 1.7;
    }
    #ecomplier-warning-box .step strong {
@@ -74,7 +73,7 @@
      border-radius: 8px;
      display: block;
      margin: 12px 0;
-     font-size: 1.1em;
+     font-size: 1.05em;
      overflow-x: auto;
      white-space: pre;
    }
@@ -97,42 +96,60 @@
 </head>
 <body>
 
- <!-- ═══════════════════════════════════════════════════════════════ -->
- <!-- WARNING BANNER - REMOVE AFTER dev.ecomplier.com IS FIXED      -->
- <!-- ═══════════════════════════════════════════════════════════════ -->
  <div id="ecomplier-warning-overlay">
    <div id="ecomplier-warning-box">
      <h1>⚠ URGENT: API IS BROKEN ⚠</h1>
-     <h2>dev.ecomplier.com is misconfigured and blocking all frontend requests!</h2>
+     <h2>dev.ecomplier.com is misconfigured — the frontend cannot reach the backend!</h2>
 
      <div class="step">
-       <strong>WHAT WENT WRONG:</strong><br>
-       Someone deployed a separate nginx/Node.js server on a Hostinger VPS (62.72.56.76) and pointed
-       the <code>dev.ecomplier.com</code> DNS A record to it — without setting it up correctly.
-       <br><br>
-       That server has <strong>CORS locked to localhost:4200 only</strong>, which means the frontend
-       at <code>ecomplier.com</code> cannot make ANY API calls. Every request fails silently.
+       <strong>WHAT HAPPENED:</strong><br>
+       Someone deployed a new server on Hostinger and changed the <code>dev.ecomplier.com</code> DNS A record
+       to point to it — without configuring CORS or matching the backend API. The frontend at
+       <code>ecomplier.com</code> now makes API calls that go to the wrong server, which blocks them
+       with CORS errors. Every login attempt fails silently.
      </div>
 
      <div class="step">
-       <strong>HOW TO FIX — CORS (nginx config on the Hostinger server):</strong><br>
-       The nginx reverse proxy / Express server must allow cross-origin requests from the frontend domain.
-       <span class="code">Access-Control-Allow-Origin: https://ecomplier.com</span>
-       Or use a wildcard for development:
-       <span class="code">Access-Control-Allow-Origin: *</span>
+       <strong>FIX #1 — DNS (GoDaddy):</strong><br>
+       Log into GoDaddy → DNS Management for <code>ecomplier.com</code> →<br><br>
+       Update <strong>BOTH</strong> of these DNS records to point to the correct backend server:<br><br>
+       1. <code>@</code> (apex domain) — A record → [backend server IP]<br>
+       2. <code>www</code> — A record → [backend server IP]<br><br>
+       Also make sure <code>dev.ecomplier.com</code> points to the same backend server.<br>
+       Remove any stale Hostinger IP records. TTL can stay at 600 seconds.
      </div>
 
      <div class="step">
-       <strong>HOW TO FIX — API ENDPOINTS:</strong><br>
-       The frontend expects POST requests at <code>/Api/Admin/login</code> with
+       <strong>FIX #2 — CORS (Backend server config):</strong><br>
+       The backend must allow cross-origin requests from the frontend. Add <strong>BOTH</strong>
+       domains to the allowed origins list:
+       <span class="code">Access-Control-Allow-Origin: https://ecomplier.com
+Access-Control-Allow-Origin: https://www.ecomplier.com</span>
+       If using nginx, configure it in the server block:
+       <span class="code">add_header Access-Control-Allow-Origin "https://ecomplier.com" always;
+add_header Access-Control-Allow-Origin "https://www.ecomplier.com" always;</span>
+       If using Express.js:
+       <span class="code">app.use(cors({
+  origin: [
+    'https://ecomplier.com',
+    'https://www.ecomplier.com',
+    'http://localhost:4200'
+  ],
+  credentials: true
+}));</span>
+     </div>
+
+     <div class="step">
+       <strong>FIX #3 — API ENDPOINTS:</strong><br>
+       The frontend POSTs to <code>/Api/Admin/login</code> with
        <code>Content-Type: application/x-www-form-urlencoded</code> and body
-       <code>username=...&password=...</code>.<br><br>
-       The backend must return JSON in this format:
+       <code>username=...&amp;password=...</code>.<br><br>
+       The backend must return:
        <span class="code">{
   "status": true,
   "msg": "Loggedin.",
   "data": {
-    "token": "base64-encoded-token",
+    "token": "&lt;base64-encoded-token&gt;",
     "adminid": 1,
     "first_name": "Admin",
     "last_name": "eComplier",
@@ -146,28 +163,22 @@
     "BankID": 0
   }
 }</span>
+       All other endpoints follow the same pattern: POST to <code>/Api/Admin/{action}</code>
+       with form-encoded body.
      </div>
 
      <div class="step">
-       <strong>HOW TO FIX — DATABASE:</strong><br>
-       The Hostinger server returns <code>"Invalid username or password"</code> for valid credentials.
-       Make sure the Node.js backend connects to the <strong>correct SQL Server database</strong>
-       (<code>ecomplier_db</code>) with the correct credentials. The original IIS backend has a working
-       database connection — match it.
-     </div>
-
-     <div class="step">
-       <strong>HOW TO FIX — DNS (if reverting):</strong><br>
-       If you want to stop using the Hostinger server, update the <code>dev.ecomplier.com</code> A record
-       in the DNS provider back to the correct backend server IP.
+       <strong>FIX #4 — DATABASE:</strong><br>
+       The current server returns <code>"Invalid username or password"</code> for valid credentials.
+       Make sure the backend connects to the correct <code>ecomplier_db</code> database with the
+       right SQL Server credentials. The original working backend has a working connection — use the same.
      </div>
 
      <button class="dismiss-btn" onclick="document.getElementById('ecomplier-warning-overlay').style.display='none'">
-       DISMISS (I understand the issue)
+       DISMISS
      </button>
    </div>
  </div>
- <!-- ═══════════════════════════════════════════════════════════════ -->
 
   <app-root></app-root>
   <script src="runtime.f5a403b6772eafd1e7e1.js" defer></script><script src="polyfills-es5.34f6a6b92e1cf251ac41.js" nomodule defer></script><script src="polyfills.7e436406e24acaf087f1.js" defer></script><script src="main.d3de10c9f43bf1e8e37e.js" defer></script></body>
