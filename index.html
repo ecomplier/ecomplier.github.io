@@ -17,167 +17,61 @@
  <link rel="stylesheet" href="styles.2381e4519e430097b0f7.css">
 
  <style>
-   #ecomplier-warning-overlay {
+   #api-warning {
      position: fixed;
-     top: 0; left: 0; right: 0; bottom: 0;
+     top: 0; left: 0; right: 0;
      z-index: 99999;
-     background: rgba(0,0,0,0.88);
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-   }
-   #ecomplier-warning-box {
-     background: #fff;
-     border: 5px solid #ff00ff;
-     border-radius: 16px;
-     padding: 40px 50px;
-     max-width: 880px;
-     width: 92%;
-     text-align: center;
-     box-shadow: 0 0 80px rgba(255,0,255,0.5);
-     max-height: 90vh;
-     overflow-y: auto;
-   }
-   #ecomplier-warning-box h1 {
-     color: #ff00ff;
-     font-size: 3em;
-     margin-bottom: 8px;
-     text-transform: uppercase;
-     letter-spacing: 3px;
-   }
-   #ecomplier-warning-box h2 {
-     color: #cc0000;
-     font-size: 1.4em;
-     margin-bottom: 25px;
-     font-weight: 700;
-   }
-   #ecomplier-warning-box .step {
-     text-align: left;
-     background: #fff0ff;
-     border-left: 6px solid #ff00ff;
-     padding: 18px 22px;
-     margin: 16px 0;
-     border-radius: 0 10px 10px 0;
-     font-size: 1.12em;
-     line-height: 1.7;
-   }
-   #ecomplier-warning-box .step strong {
-     color: #ff00ff;
-   }
-   #ecomplier-warning-box .code {
-     background: #1a1a2e;
-     color: #00ff88;
-     font-family: 'Consolas', 'Courier New', monospace;
-     padding: 14px 20px;
-     border-radius: 8px;
-     display: block;
-     margin: 12px 0;
-     font-size: 1.05em;
-     overflow-x: auto;
-     white-space: pre;
-   }
-   #ecomplier-warning-box .dismiss-btn {
-     margin-top: 28px;
-     padding: 14px 35px;
      background: #ff00ff;
      color: #fff;
-     border: none;
-     border-radius: 8px;
-     font-size: 1.3em;
+     font-family: 'Segoe UI', Tahoma, sans-serif;
+     padding: 12px 20px;
+     font-size: 14px;
+     line-height: 1.5;
+     text-align: center;
+     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+   }
+   #api-warning .title {
+     font-size: 18px;
+     font-weight: 900;
+     letter-spacing: 2px;
+     margin-bottom: 6px;
+   }
+   #api-warning .msg {
+     font-size: 13px;
+     opacity: 0.95;
+     max-width: 900px;
+     margin: 0 auto;
+   }
+   #api-warning .msg b { color: #ffff00; }
+   #api-warning .dismiss {
+     position: absolute;
+     top: 8px;
+     right: 16px;
+     background: rgba(255,255,255,0.2);
+     border: 1px solid #fff;
+     color: #fff;
+     padding: 4px 12px;
+     border-radius: 4px;
      cursor: pointer;
-     font-weight: bold;
-     letter-spacing: 1px;
+     font-size: 12px;
    }
-   #ecomplier-warning-box .dismiss-btn:hover {
-     background: #cc00cc;
-   }
+   #api-warning .dismiss:hover { background: rgba(255,255,255,0.35); }
+   body { padding-top: 0 !important; }
  </style>
 </head>
 <body>
 
- <div id="ecomplier-warning-overlay">
-   <div id="ecomplier-warning-box">
-     <h1>⚠ URGENT: API IS BROKEN ⚠</h1>
-     <h2>dev.ecomplier.com is misconfigured — the frontend cannot reach the backend!</h2>
-
-     <div class="step">
-       <strong>WHAT HAPPENED:</strong><br>
-       Someone deployed a new server on Hostinger and changed the <code>dev.ecomplier.com</code> DNS A record
-       to point to it — without configuring CORS or matching the backend API. The frontend at
-       <code>ecomplier.com</code> now makes API calls that go to the wrong server, which blocks them
-       with CORS errors. Every login attempt fails silently.
-     </div>
-
-     <div class="step">
-       <strong>FIX #1 — DNS (GoDaddy):</strong><br>
-       Log into GoDaddy → DNS Management for <code>ecomplier.com</code> →<br><br>
-       Update <strong>BOTH</strong> of these DNS records to point to the correct backend server:<br><br>
-       1. <code>@</code> (apex domain) — A record → [backend server IP]<br>
-       2. <code>www</code> — A record → [backend server IP]<br><br>
-       Also make sure <code>dev.ecomplier.com</code> points to the same backend server.<br>
-       Remove any stale Hostinger IP records. TTL can stay at 600 seconds.
-     </div>
-
-     <div class="step">
-       <strong>FIX #2 — CORS (Backend server config):</strong><br>
-       The backend must allow cross-origin requests from the frontend. Add <strong>BOTH</strong>
-       domains to the allowed origins list:
-       <span class="code">Access-Control-Allow-Origin: https://ecomplier.com
-Access-Control-Allow-Origin: https://www.ecomplier.com</span>
-       If using nginx, configure it in the server block:
-       <span class="code">add_header Access-Control-Allow-Origin "https://ecomplier.com" always;
-add_header Access-Control-Allow-Origin "https://www.ecomplier.com" always;</span>
-       If using Express.js:
-       <span class="code">app.use(cors({
-  origin: [
-    'https://ecomplier.com',
-    'https://www.ecomplier.com',
-    'http://localhost:4200'
-  ],
-  credentials: true
-}));</span>
-     </div>
-
-     <div class="step">
-       <strong>FIX #3 — API ENDPOINTS:</strong><br>
-       The frontend POSTs to <code>/Api/Admin/login</code> with
-       <code>Content-Type: application/x-www-form-urlencoded</code> and body
-       <code>username=...&amp;password=...</code>.<br><br>
-       The backend must return:
-       <span class="code">{
-  "status": true,
-  "msg": "Loggedin.",
-  "data": {
-    "token": "&lt;base64-encoded-token&gt;",
-    "adminid": 1,
-    "first_name": "Admin",
-    "last_name": "eComplier",
-    "email_id": "admin@gmail.com",
-    "mobile_no": "9890989000",
-    "avtar": "",
-    "gender": 1,
-    "role_id": 0,
-    "role_name": null,
-    "userroleid": 0,
-    "BankID": 0
-  }
-}</span>
-       All other endpoints follow the same pattern: POST to <code>/Api/Admin/{action}</code>
-       with form-encoded body.
-     </div>
-
-     <div class="step">
-       <strong>FIX #4 — DATABASE:</strong><br>
-       The current server returns <code>"Invalid username or password"</code> for valid credentials.
-       Make sure the backend connects to the correct <code>ecomplier_db</code> database with the
-       right SQL Server credentials. The original working backend has a working connection — use the same.
-     </div>
-
-     <button class="dismiss-btn" onclick="document.getElementById('ecomplier-warning-overlay').style.display='none'">
-       DISMISS
-     </button>
+ <!-- WARNING BANNER - REMOVE AFTER dev.ecomplier.com IS FIXED -->
+ <div id="api-warning">
+   <div class="title">WARNING: API IS BROKEN</div>
+   <div class="msg">
+     The backend at <b>dev.ecomplier.com</b> has <b>CORS locked to localhost:4200 only</b> and a
+     <b>wrong database</b>. Login will fail. The Hostinger team must:
+     1) Update <b>GoDaddy DNS</b> for <b>@</b> and <b>www</b> records to point to the correct backend IP.
+     2) Add <b>https://ecomplier.com</b> and <b>https://www.ecomplier.com</b> to the backend CORS allowed origins.
+     3) Fix the database connection to use the correct <b>ecomplier_db</b> SQL Server credentials.
    </div>
+   <button class="dismiss" onclick="document.getElementById('api-warning').style.display='none'">Dismiss</button>
  </div>
 
   <app-root></app-root>
